@@ -1,0 +1,530 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Blog Post and Comment API Documentation",
+        "description": "Blog Post and Comment API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/api",
+            "description": "Local Server "
+        },
+        {
+            "url": "http://staging.example.com",
+            "description": "Staging server"
+        },
+        {
+            "url": "http://example.com",
+            "description": "Production server"
+        }
+    ],
+    "paths": {
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register a new user",
+                "description": "Register a new user and return an access token.",
+                "operationId": "ae190930a5b8116a8fc88babdf9e03de",
+                "requestBody": {
+                    "description": "User registration data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "The user's name",
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "description": "The user's email address",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "The user's password",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "token"
+                                    ],
+                                    "properties": {
+                                        "token": {
+                                            "description": "Access token for the registered user",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Log in a user",
+                "description": "Log in a user and return an access token.",
+                "operationId": "cec7d259e69f28f3435b96898f4c3715",
+                "requestBody": {
+                    "description": "User login data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "description": "The user's email address",
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "description": "The user's password",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "token"
+                                    ],
+                                    "properties": {
+                                        "token": {
+                                            "description": "Access token for the logged-in user",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/comments": {
+            "post": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Add a new comment",
+                "description": "Create a new comment on a post.",
+                "operationId": "b8d09820f5631910a9fbc3caac5b3356",
+                "requestBody": {
+                    "description": "Comment data to be added",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "content",
+                                    "post_id"
+                                ],
+                                "properties": {
+                                    "content": {
+                                        "description": "The content of the comment",
+                                        "type": "string"
+                                    },
+                                    "post_id": {
+                                        "description": "ID of the post to comment on",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Comment"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/comments/{id}": {
+            "delete": {
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "Delete a comment",
+                "description": "Remove a comment by its ID.",
+                "operationId": "eda2c5285596fef3f63fb5ffc3564dac",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the comment to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Comment deleted"
+                    },
+                    "404": {
+                        "description": "Comment not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/posts": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Get all posts",
+                "description": "Retrieve a list of all blog posts.",
+                "operationId": "0b955e8968162b53682e099e3b61a36e",
+                "responses": {
+                    "200": {
+                        "description": "List of all posts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Post"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Create a new post",
+                "description": "Create a new blog post.",
+                "operationId": "89379277b9d26479e496570f8f33dde9",
+                "requestBody": {
+                    "description": "Post data to create a new blog post",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "content"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input"
+                    }
+                }
+            }
+        },
+        "/posts/{id}": {
+            "get": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Get a specific post",
+                "description": "Retrieve details of a single blog post by its ID.",
+                "operationId": "16cbf3d9135e86368187a1cc566f762c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the post to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Post details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Update a post",
+                "description": "Update an existing blog post by its ID.",
+                "operationId": "6277e95e67175145bff5fec574b48fae",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the post to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Updated post data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "content"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Post updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Posts"
+                ],
+                "summary": "Delete a post",
+                "description": "Remove a blog post by its ID.",
+                "operationId": "6761b4e3e79ebdede6d985600f866fca",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the post to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Post deleted"
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Comment": {
+                "required": [
+                    "id",
+                    "content",
+                    "post_id",
+                    "user_id"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the comment",
+                        "type": "integer"
+                    },
+                    "content": {
+                        "description": "The content of the comment",
+                        "type": "string"
+                    },
+                    "post_id": {
+                        "description": "The ID of the post to which the comment belongs",
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "description": "The ID of the user who made the comment",
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "description": "The creation date of the comment",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "The last update date of the comment",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            },
+            "Post": {
+                "required": [
+                    "id",
+                    "title",
+                    "content",
+                    "user_id"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "The unique identifier of the post",
+                        "type": "integer"
+                    },
+                    "title": {
+                        "description": "The title of the post",
+                        "type": "string"
+                    },
+                    "content": {
+                        "description": "The content of the post",
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "description": "The ID of the user who created the post",
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "description": "The creation date of the post",
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "description": "The last update date of the post",
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Operations related to user authentication"
+        },
+        {
+            "name": "Comments",
+            "description": "Operations related to comments"
+        },
+        {
+            "name": "Posts",
+            "description": "Operations related to posts"
+        }
+    ]
+}
