@@ -24,7 +24,7 @@ This is a Laravel-based blog application with user authentication, CRUD operatio
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/your-repository.git
+   git clone https://github.com/mahereldesoky/BlogTask.git
 
 2. **Install Dependencies**
 composer install
